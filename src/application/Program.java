@@ -15,11 +15,14 @@ public class Program {
 		
 		System.out.println(obj);
 		
-		Seller seller = new Seller(21,"Bob","bob@gmail.com", new Date(),3000.0,obj);
+		Seller seller2 = new Seller(21,"Bob","bob@gmail.com", new Date(),3000.0,obj);
 		
-		System.out.println(seller);
+		
 		
 		SellerDao sellerDao = DaoFactory.createSellerDao();
+	
+		Seller seller = sellerDao.findById(3);
+		System.out.println(seller);
 	}
 	
 }
