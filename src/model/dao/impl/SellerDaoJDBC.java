@@ -114,8 +114,52 @@ public class SellerDaoJDBC implements SellerDao{
 	//Método para buscar uma lista Seller;
 	@Override
 	public List<Seller> findAll() {
-		// TODO Auto-generated method stub
-		return null;
+		PreparedStatement st = null;
+		ResultSet rs = null;
+		
+		//Tratamento de excessões;
+		try {
+			//Variável de acesso ao dado recebendo o valor da query que será executada no BD;
+			st = conn.prepareStatement("SELECT seller.*,department.Name as DepName "
+					+ "FROM seller INNER JOIN department "
+					+ "ON seller.DepartmentId = department.Id "
+					+ "ORDER BY Name;");
+			
+			
+			rs = st.executeQuery();
+			
+			List<Seller> list = new ArrayList<>();
+			Map<Integer, Department> map = new HashMap<>();
+			
+			//If usado para colocar a rs na próxima posição caso não tenha nada na posição atual;
+			//Se as próximas posições também não estiverem nenhum valor, é usado o return nulo que está mais abaixo;
+			while(rs.next()) {
+			
+				Department dep = map.get(rs.getInt("DepartmentId"));
+				
+				if(dep == null) {
+					dep = instanciateDepartment(rs);
+					map.put(rs.getInt("DepartmentId"), dep);
+				}
+				
+				
+				Seller seller = instanciateSeller(rs, dep);
+				list.add(seller);		
+				
+				
+
+			}
+		//Usado para retornar nulo caso não tenha nenhum valor no resultSet;
+			return list;
+		
+		//Tratamento de excessões;
+		}catch (SQLException e) {
+			throw new DbException(e.getMessage());
+			
+		}finally {
+		DB.closeStatement(st);
+		DB.closeResultSet(rs);
+		}
 	}
 
 
